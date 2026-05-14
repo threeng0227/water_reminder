@@ -157,7 +157,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                           value: Formatter.cupsCount(
                               total, settings.defaultCupSizeMl),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 10),
                         _MiniStat(
                           icon: '⏱',
                           label: s.lastSip,
@@ -165,7 +165,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                               ? '—'
                               : _timeSince(intakes.first.timestamp, now, s),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 10),
                         _MiniStat(
                           icon: '💧',
                           label: s.leftToGo,
@@ -181,25 +181,40 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
                 const SliverToBoxAdapter(child: SizedBox(height: 20)),
 
-                // Quick-add cups
+                // Quick-add cups — centered when items fit, scrollable when they don't
                 SliverToBoxAdapter(
-                  child: SizedBox(
-                    height: 96,
-                    child: ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      scrollDirection: Axis.horizontal,
-                      itemCount: settings.customCupSizes.length,
-                      separatorBuilder: (_, i) => const SizedBox(width: 10),
-                      itemBuilder: (context, index) {
-                        final size = settings.customCupSizes[index];
-                        return CupButton(
-                          amountMl: size,
-                          icon: _cupIcon(size),
-                          onTap: () => _addWater(size),
-                          isSelected: size == settings.defaultCupSizeMl,
-                        );
-                      },
-                    ),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final sizes = settings.customCupSizes;
+                      const itemW = 76.0;
+                      const gap = 10.0;
+                      final totalW =
+                          sizes.length * itemW + (sizes.length - 1) * gap;
+                      final availableW = constraints.maxWidth - 40;
+                      final hPad = totalW < availableW
+                          ? (constraints.maxWidth - totalW) / 2
+                          : 20.0;
+                      return SizedBox(
+                        height: 82,
+                        child: ListView.separated(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: hPad),
+                          scrollDirection: Axis.horizontal,
+                          itemCount: sizes.length,
+                          separatorBuilder: (context, i) =>
+                              const SizedBox(width: gap),
+                          itemBuilder: (context, index) {
+                            final size = sizes[index];
+                            return CupButton(
+                              amountMl: size,
+                              icon: _cupIcon(size),
+                              onTap: () => _addWater(size),
+                              isSelected: size == settings.defaultCupSizeMl,
+                            );
+                          },
+                        ),
+                      );
+                    },
                   ),
                 ),
 
@@ -626,7 +641,7 @@ class _MiniStat extends StatelessWidget {
           border: Border.all(color: AppColors.divider),
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(icon, style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 4),
@@ -637,11 +652,12 @@ class _MiniStat extends StatelessWidget {
                 fontWeight: FontWeight.w700,
                 fontSize: 15,
               ),
+              textAlign: TextAlign.center,
             ),
             Text(
               label,
-              style:
-                  const TextStyle(color: AppColors.textHint, fontSize: 10),
+              style: const TextStyle(color: AppColors.textHint, fontSize: 10),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
