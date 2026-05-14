@@ -19,7 +19,7 @@ class AppConstants {
   static const String adInterstitialUnitId = 'ca-app-pub-3940256099942544/1033173712';
 
   static const String widgetName = 'WaterReminderWidget';
-  static const String widgetAuthor = 'com.unitysport.water_reminder';
+  static const String widgetAuthor = 'com.threeng.waterreminder';
 
   static const List<String> motivationalMessages = [
     "Take a sip — your body will thank you 💙",
