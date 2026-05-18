@@ -187,7 +187,7 @@ class SettingsScreen extends ConsumerWidget {
             children: [
               _LangTile(
                 flag: '🇺🇸',
-                label: 'English',
+                label: s.langEnglish,
                 selected: ref.watch(localeProvider) == 'en',
                 onTap: () =>
                     ref.read(localeProvider.notifier).setLocale('en'),
@@ -195,7 +195,7 @@ class SettingsScreen extends ConsumerWidget {
               const Divider(color: AppColors.divider, height: 1),
               _LangTile(
                 flag: '🇻🇳',
-                label: 'Tiếng Việt',
+                label: s.langVietnamese,
                 selected: ref.watch(localeProvider) == 'vi',
                 onTap: () =>
                     ref.read(localeProvider.notifier).setLocale('vi'),

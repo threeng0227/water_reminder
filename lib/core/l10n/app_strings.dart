@@ -23,6 +23,8 @@ class AppStrings {
   String get languageSubtitle =>
       _vi ? 'Bạn có thể thay đổi sau trong Cài đặt' : 'You can change this later in Settings';
   String get continueBtn => _vi ? 'Tiếp tục' : 'Continue';
+  String get langEnglish => _vi ? 'Tiếng Anh' : 'English';
+  String get langVietnamese => _vi ? 'Tiếng Việt' : 'Vietnamese';
 
   // ── Onboarding ────────────────────────────────────────────────────────────
   String get ob1Title => _vi ? 'Uống đủ nước' : 'Stay Hydrated';

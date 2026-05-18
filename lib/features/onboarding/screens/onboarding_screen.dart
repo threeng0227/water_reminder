@@ -94,7 +94,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _isGoalPage ? _finish : _nextPage,
+                  onPressed: _isGoalPage ? () => _finish() : _nextPage,
                   child: Text(
                     _isGoalPage
                         ? s.getStarted
@@ -143,14 +143,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           const SizedBox(height: 48),
           _LangOption(
             flag: '🇺🇸',
-            label: 'English',
+            label: s.langEnglish,
             selected: currentLocale == 'en',
             onTap: () => ref.read(localeProvider.notifier).setLocale('en'),
           ),
           const SizedBox(height: 16),
           _LangOption(
             flag: '🇻🇳',
-            label: 'Tiếng Việt',
+            label: s.langVietnamese,
             selected: currentLocale == 'vi',
             onTap: () => ref.read(localeProvider.notifier).setLocale('vi'),
           ),
@@ -274,30 +274,42 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   Future<void> _finish() async {
-    final settings = ref.read(settingsProvider);
-    await ref.read(settingsProvider.notifier).save(
-          AppSettings(
-            dailyGoalMl: _selectedGoal,
-            defaultCupSizeMl: settings.defaultCupSizeMl,
-            notificationsEnabled: settings.notificationsEnabled,
-            smartReminders: settings.smartReminders,
-            reminderIntervalMinutes: settings.reminderIntervalMinutes,
-            wakeHour: settings.wakeHour,
-            sleepHour: settings.sleepHour,
-            isPremium: settings.isPremium,
-            selectedTheme: settings.selectedTheme,
-            customCupSizes: settings.customCupSizes,
-            motivationalNotifications: settings.motivationalNotifications,
+    try {
+      final settings = ref.read(settingsProvider);
+      await ref.read(settingsProvider.notifier).save(
+            AppSettings(
+              dailyGoalMl: _selectedGoal,
+              defaultCupSizeMl: settings.defaultCupSizeMl,
+              notificationsEnabled: settings.notificationsEnabled,
+              smartReminders: settings.smartReminders,
+              reminderIntervalMinutes: settings.reminderIntervalMinutes,
+              wakeHour: settings.wakeHour,
+              sleepHour: settings.sleepHour,
+              isPremium: settings.isPremium,
+              selectedTheme: settings.selectedTheme,
+              customCupSizes: settings.customCupSizes,
+              motivationalNotifications: settings.motivationalNotifications,
+            ),
+          );
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('onboarding_done', true);
+      widget.onComplete();
+      if (mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const AppShell()),
+          (_) => false,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi: $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
           ),
         );
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('onboarding_done', true);
-    widget.onComplete();
-    if (mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const AppShell()),
-        (_) => false,
-      );
+      }
     }
   }
 }
